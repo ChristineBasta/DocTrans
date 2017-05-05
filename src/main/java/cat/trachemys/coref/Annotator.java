@@ -12,8 +12,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.json.JSONObject;
 
+import cat.trachemys.coref.CorefererCommons.CorefDocs;
 import cat.trachemys.generic.Check;
 import cat.trachemys.generic.FileIO;
 
@@ -45,14 +45,14 @@ public class Annotator {
 		
 		Coreferer cf = corefererFactory.loadCoreferer(lang);
 		String text = cf.loadFile(file);
-		JSONObject doc = cf.annotateText(text);
+		CorefDocs cd = cf.annotateText(text);
 		if (json){
 			String jsonFile=file.replaceAll(".(\\w{1,3})\\$", ".json");
-			FileIO.writeJson2File(doc, jsonFile);
+			FileIO.writeJson2File(cd.doc, jsonFile);
 		}
 		if (txt){
 			String outputFile=file.replaceAll(".(\\w{1,3})\\$", ".coref.$1");
-			cf.writeCoreferences(doc, outputFile);
+			cf.writeCoreferences(cd, outputFile);
 		}
 	}
 
@@ -71,15 +71,15 @@ public class Annotator {
 		CommandLineParser parser = new BasicParser();
 
 		options.addOption("l", "language", true, 
-					"Language of the input text (en)");		
+				"Language of the input text (en)");		
 		options.addOption("e", "extension", true, 
 				"Extension of the input documents (if different from the language)");		
 		options.addOption("i", "input", true, 
-					"Input folder to annotate -one file per raw document-");		
+				"Input folder to annotate -one file per raw document-");		
 		options.addOption("j", "json", true, 
-				"Save json file 1/0 (default: 1)");		
+				"Save annotations in json file 1/0 (default: 1)");		
 		options.addOption("o", "txt", true, 
-				"Save document with correferences  1/0 (default: 1)");		
+				"Save document with correferences tagged 1/0 (default: 1)");		
 		options.addOption("h", "help", false, "This help");
 
 		try {			
@@ -110,6 +110,8 @@ public class Annotator {
 	 * 		-l Language of the input text 
 	 * 		-e Extension of the input documents
 	 *      -i Input folder
+	 *      -j save annotations in json file
+	 *      -o create an output file with coreferences as tags to the source file
 	 */
 	public static void main(String[] args) {
 		CommandLine cLine = parseArguments(args);
