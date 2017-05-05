@@ -7,6 +7,10 @@ import java.util.Properties;
 
 import org.json.JSONObject;
 
+import cat.trachemys.generic.FileIO;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,22 +31,77 @@ import edu.stanford.nlp.util.CoreMap;
  * @author cristinae
  * @since 29.04.2017
  */
-public class CorefMarker {
+public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
+	
+
+	public JSONObject annotateText(String text){
+		
+	    Annotation document = new Annotation(text);
+	    
+	    // Preparing the annotators
+	    Properties props = new Properties();
+	    props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,parse,mention,coref");
+	    props.setProperty("coref.algorithm", "neural");
+	    props.put("ssplit.eolonly", "true");
+	    
+	    // Annotate
+	    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+	    pipeline.annotate(document);
+	    
+	    //coreference resolution begins here
+	    Map<Integer, CorefChain> corefs = document.get(CorefCoreAnnotations.CorefChainAnnotation.class);
+		JSONObject doc = new JSONObject();
+	    for(Map.Entry<Integer, CorefChain> entry : corefs.entrySet()) {
+	    	CorefChain corefChain = entry.getValue();
+	    	
+	    	//self references will not be considered 
+	    	if(corefChain.getMentionMap().entrySet().size() <= 1) {
+	    		continue;
+	    	}
+	    	//Customising the format of the chains
+	    	String fullChain = "";
+	    	for (CorefMention temp : corefChain.getMentionsInTextualOrder()) {
+	    		// doing my best to avoid regexp!
+				fullChain = fullChain + "<" + temp.toString().split("\"")[1] + "> ";
+			}
+
+	    	//Extracting the info for every mention
+	    	for(CorefMention corefMention:corefChain.getMentionsInTextualOrder()){
+				JSONObject info = new JSONObject();
+				// General info
+				info.put("start", corefMention.startIndex);
+				info.put("end", corefMention.endIndex-1);
+				info.put("tokens", corefMention.mentionSpan);
+				info.put("type", corefMention.mentionType);
+
+				// Head
+				boolean isHead = false;
+				if (corefMention.mentionID == corefChain.getRepresentativeMention().mentionID) {
+					isHead = true;	
+				}
+				info.put("isHead", isHead);
+
+				// Coreference chain, with and without the current word
+   				info.put("chain", fullChain);
+   				String restChain = fullChain.replace("<"+corefMention.mentionSpan+"> ","");
+   				info.put("restChain", restChain);
+   							
+    			doc.accumulate(String.valueOf(corefMention.sentNum), info);
+    		}
+	    
+	    }
+	    //System.out.println(doc.toString(2));
+		return doc;
+	}
 	
 	  public static void main(String[] args) throws Exception {
 		    String text = "Barack Obama was born in Hawaii and his wife in London. \n " 
 	                      + "He is the president. She is noone. I know him. \n "
 	                      + "Obama was elected in 2008 and she is tall.";
-		    Annotation document = new Annotation(text);
-		    Properties props = new Properties();
-		    props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,parse,mention,coref");
-		    props.setProperty("coref.algorithm", "neural");
-		    props.put("ssplit.eolonly", "true");
-		    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-		    pipeline.annotate(document);
 		    System.out.println("---");
 		    System.out.println("coref chains");
 
+		    Annotation document = new Annotation(text);
 		    List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 		   // List<String> tokSentences;
 		    List<String> tokSentences = new ArrayList<String>();
@@ -102,6 +161,7 @@ public class CorefMarker {
        					String[] tokens = tokSentences.get(corefMention.sentNum).split("\\s+");
        					tokens[corefMention.startIndex-1] = restChain+"_"+tokens[corefMention.startIndex-1];
        					tokens[corefMention.startIndex-1] = tokens[corefMention.startIndex-1].replaceAll("\\s+", "_");
+       				
        					tokSentences.add(corefMention.sentNum, String.join(" ",tokens));
        				}
        				// Let's add everything for this mention
@@ -120,6 +180,7 @@ public class CorefMarker {
 
 		    		    
 	  }
+
 
 }
 

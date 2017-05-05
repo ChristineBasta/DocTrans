@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
@@ -14,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.json.JSONObject;
+
 
 public class FileIO {
 	public final static String separator = System.getProperty("file.separator");
@@ -43,8 +47,8 @@ public class FileIO {
 				}
 			}
 		}
-		if (fileList != null)
-			Collections.sort(fileList, String.CASE_INSENSITIVE_ORDER);
+		//if (fileList != null)
+		//	Collections.sort(fileList, String.CASE_INSENSITIVE_ORDER);
 
 		return fileList;
 	}
@@ -99,7 +103,12 @@ public class FileIO {
 	}
 
 
-	
+	/**
+	 * Reads a file into a string
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
 	public static String fileToString(File f) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		FileInputStream input = new FileInputStream(f);
@@ -134,6 +143,14 @@ public class FileIO {
 		return result;
 	}
 
+	/***
+	 * Writes a string into a file
+	 * 
+	 * @param f
+	 * @param text
+	 * @param bom
+	 * @throws IOException
+	 */
 	public static void stringToFile(File f, String text, boolean bom)
 			throws IOException {
 		if ((f.getParent()) != null && !(new File(f.getParent()).exists()))
@@ -155,6 +172,14 @@ public class FileIO {
 
 	}
 
+	/**
+	 * Appends a string into an existing file
+	 * 
+	 * @param f
+	 * @param text
+	 * @param bom
+	 * @throws IOException
+	 */
 	public static void appendStringToFile(File f, String text, boolean bom)
 			throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -171,5 +196,23 @@ public class FileIO {
 	}
 
 
+	/**
+	 * Write a JSON object into a file
+	 * 
+	 * @param obj
+	 * @param file
+	 */
+	public static void writeJson2File(JSONObject obj, String file){
+		try {
+			FileWriter fileWriter = new FileWriter(file);
+			fileWriter.write(obj.toString());
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (Exception e) {
+			System.out.println("A problem occurred creating the JSON output file.");
+			e.printStackTrace();
+		}
+		
+	}
 
 }

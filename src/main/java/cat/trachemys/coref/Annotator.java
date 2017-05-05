@@ -4,7 +4,7 @@
 package cat.trachemys.coref;
 
 import java.io.File;
-import java.util.Locale;
+import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -12,6 +12,10 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.json.JSONObject;
+
+import cat.trachemys.generic.Check;
+import cat.trachemys.generic.FileIO;
 
 /**
  * Main class for pre-processing a folder with raw text documents and annotate it with lexical chains
@@ -20,8 +24,38 @@ import org.apache.commons.cli.ParseException;
  * @since 29.04.2017
  */
 public class Annotator {
-
 	
+	/** Language */
+	private final String lang;
+	/** Annotation object*/
+	private final CorefererFactory corefererFactory;
+
+	/**
+	 * Constructor 
+	 * @param language
+	 */
+	public Annotator(String language){
+		Check.notNull(language);
+		this.lang = language;
+		corefererFactory = new CorefererFactory();				
+	}
+	
+
+	private void annotateFile(String file, boolean json, boolean txt) {
+		
+		Coreferer cf = corefererFactory.loadCoreferer(lang);
+		String text = cf.loadFile(file);
+		JSONObject doc = cf.annotateText(text);
+		if (json){
+			String jsonFile=file.replaceAll(".(\\w{1,3})\\$", ".json");
+			FileIO.writeJson2File(doc, jsonFile);
+		}
+		if (txt){
+			String outputFile=file.replaceAll(".(\\w{1,3})\\$", ".coref.$1");
+			cf.writeCoreferences(doc, outputFile);
+		}
+	}
+
 	/**
 	 * Parses the command line arguments
 	 * 	
@@ -38,12 +72,18 @@ public class Annotator {
 
 		options.addOption("l", "language", true, 
 					"Language of the input text (en)");		
+		options.addOption("e", "extension", true, 
+				"Extension of the input documents (if different from the language)");		
 		options.addOption("i", "input", true, 
-					"Input folder to annotate -one file per document-");		
+					"Input folder to annotate -one file per raw document-");		
+		options.addOption("j", "json", true, 
+				"Save json file 1/0 (default: 1)");		
+		options.addOption("o", "txt", true, 
+				"Save document with correferences  1/0 (default: 1)");		
 		options.addOption("h", "help", false, "This help");
 
 		try {			
-		    cLine = parser.parse( options, args );
+		    cLine = parser.parse(options, args);
 		} catch( ParseException exp ) {
 			System.out.println("Unexpected exception :" + exp.getMessage() );			
 		}	
@@ -52,7 +92,7 @@ public class Annotator {
 			formatter.printHelp(Annotator.class.getSimpleName(),options );
 			System.exit(0);
 		}
-
+		
 		if (cLine == null || !(cLine.hasOption("l")) ) {
 			System.out.println("Please, set the language\n");
 			formatter.printHelp(Annotator.class.getSimpleName(),options );
@@ -68,6 +108,7 @@ public class Annotator {
 	 * 
 	 * @param args 
 	 * 		-l Language of the input text 
+	 * 		-e Extension of the input documents
 	 *      -i Input folder
 	 */
 	public static void main(String[] args) {
@@ -75,13 +116,34 @@ public class Annotator {
 		
 		// Language
 		String language = cLine.getOptionValue("l");
-		// Input file
+		// Files extension
+		String extension = language;
+		if (cLine.hasOption("e")){
+			extension = cLine.getOptionValue("e");
+		} 	
+		
+		// Input folder
 		File input = new File(cLine.getOptionValue("i"));
-		File output = new File(cLine.getOptionValue("i").concat(".lem"));
-		//run
-		//CorefMarker cm = new CorefMarker(new Locale(language));
-		//preprocessFolder(input, cm);
+		
+		// Output files
+		boolean json = true;
+		boolean txt = true;
+		if (cLine.hasOption("j")){
+			json = Integer.valueOf(cLine.getOptionValue("j")) != 0;
+		} 
+		if (cLine.hasOption("o")){
+			txt = Integer.valueOf(cLine.getOptionValue("o")) != 0;
+		} 
+		
+		// Run
+		List<String> files = FileIO.getFilesExt(input, extension);
+		for (String file : files) {
+			Annotator ann = new Annotator(language);
+			ann.annotateFile(file, json, txt);
+		}
+		
 
 	}
+	
 
 }
