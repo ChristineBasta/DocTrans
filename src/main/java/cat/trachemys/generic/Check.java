@@ -31,9 +31,10 @@ public class Check {
 	 * @return true if the given object is not null
 	 */
 	public final static boolean notNull(final Object object){
-		if (object == null) 
+		if (object == null) {
+			System.out.println("Object is null.");
 			return true;
-		System.out.println("Object is null.");
+		}
 		return false;				
 	}
 

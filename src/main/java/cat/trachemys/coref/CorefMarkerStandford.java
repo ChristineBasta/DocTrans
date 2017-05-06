@@ -6,13 +6,10 @@ package cat.trachemys.coref;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +52,7 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 	    // Annotate
 	    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 	    pipeline.annotate(document);
-	    
-	    
+	    	    
 	    //coreference resolution begins here
 	    Map<Integer, CorefChain> corefs = document.get(CorefCoreAnnotations.CorefChainAnnotation.class);
 		JSONObject doc = new JSONObject();
@@ -72,7 +68,15 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 		   	HashSet<String> mentions = new HashSet<String>();  //To avoid duplicates
 		   	for (CorefMention temp : corefChain.getMentionsInTextualOrder()) {	    		
 		   		String tempClean = temp.toString().split("\"")[1]; // doing my best to avoid regexp!
-		   		if (temp.mentionType.name() == "PRONOMINAL"){
+		   		// We don't want full sentences
+		   		//if(tempClean.split("\\s+").length>3 && temp.mentionType.name() == "NOMINAL"){
+		   		if(tempClean.split("\\s+").length>3){
+		   			//System.out.println(temp.mentionType.name());
+		   			//System.out.println(tempClean);
+		   			continue;
+		   		}
+		   		// Non-NEs can be lowercased
+		   		if (temp.mentionType.name() == "PRONOMINAL" || temp.mentionType.name() == "NOMINAL"){
 		   			mentions.add("<"+tempClean.toString().toLowerCase()+">");
 		   		} else {
 		   			mentions.add("<"+tempClean.toString()+">");
@@ -98,9 +102,10 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 				info.put("isHead", isHead);
 
 				// Coreference chain, with and without the current word
-   				info.put("chain", fullChain);
-   				String restChain = fullChain.replace("<"+corefMention.mentionSpan+"> ","");
-      			restChain = restChain.replace("<"+corefMention.mentionSpan.toLowerCase()+"> ","");
+  				//System.out.println("mention: "+corefMention.mentionSpan);
+   				//System.out.println(fullChain);
+   				String restChain = fullChain.replace("<"+corefMention.mentionSpan+">","");
+      			restChain = restChain.replace("<"+corefMention.mentionSpan.toLowerCase()+">","");
       			info.put("restChain", restChain);
    							
     			doc.accumulate(String.valueOf(corefMention.sentNum), info);

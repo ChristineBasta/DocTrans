@@ -41,17 +41,17 @@ public class Annotator {
 	}
 	
 
-	private void annotateFile(String file, boolean json, boolean txt) {
+	private void annotateFile(String file, String extension, boolean json, boolean txt) {
 		
 		Coreferer cf = corefererFactory.loadCoreferer(lang);
 		String text = cf.loadFile(file);
 		CorefDocs cd = cf.annotateText(text);
 		if (json){
-			String jsonFile=file.replaceAll(".(\\w{1,3})\\$", ".json");
+			String jsonFile=file.replaceAll("."+extension+"$", ".json."+extension);
 			FileIO.writeJson2File(cd.doc, jsonFile);
 		}
 		if (txt){
-			String outputFile=file.replaceAll(".(\\w{1,3})\\$", ".coref.$1");
+			String outputFile=file.replaceAll("."+extension+"$", ".coref."+extension);
 			cf.writeCoreferences(cd, outputFile);
 		}
 	}
@@ -141,10 +141,9 @@ public class Annotator {
 		List<String> files = FileIO.getFilesExt(input, extension);
 		for (String file : files) {
 			Annotator ann = new Annotator(language);
-			ann.annotateFile(file, json, txt);
+			ann.annotateFile(file, extension, json, txt);
 		}
 		
-
 	}
 	
 

@@ -66,12 +66,18 @@ public abstract class CorefererCommons {
 	    while (iter.hasNext()) {
 	        String sentenceNum = iter.next();
 	        try {
-	            JSONArray value = (JSONArray) doc.get(sentenceNum);	            
-	       	    //String tempSentence = tokSentences.get(2);
+	        	JSONArray value = new JSONArray();
+	        	// If there is only a mention in a sentence, we don't have an array of JSONObjects but 
+	        	// only a JSON object. We need to put in in an array.
+	        	if (doc.get(sentenceNum).getClass().getName() == "org.json.JSONObject"){
+	        		value.put(0, doc.get(sentenceNum));
+	        	} else {
+	        		value = (JSONArray) doc.get(sentenceNum);
+	        	}
 	            int num = Integer.valueOf(sentenceNum)-1;
        	        String tempSentence = document.get(num);
-        	    String[] tokens = tempSentence.split(" ");
-	            for (Object chains : value){
+       	        String[] tokens = tempSentence.split(" ");
+       	     	for (Object chains : value){
 	            	JSONObject jsonChain = (JSONObject) chains;
 	            	// We don't include the header of a chain, it can belong to different chains
 	            	if (!jsonChain.getBoolean("isHead") ){
