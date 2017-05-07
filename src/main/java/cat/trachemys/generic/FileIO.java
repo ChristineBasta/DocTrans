@@ -198,6 +198,7 @@ public class FileIO {
 
 	/**
 	 * Write a JSON object into a file
+	 * TODO pretty print
 	 * 
 	 * @param obj
 	 * @param file

@@ -149,8 +149,8 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 	// just playing here
 	public static void main(String[] args) throws Exception {
 
-		String text = "Barack Obama was born in Hawaii and his wife in London. \n " 
-	                     + "He is the president. She is noone. I know him. \n "
+		String text = "Barack Obama was born in Honolulu and his wife in Chicago. \n " 
+	                     + "He is the president. She is a lawer. I know him. \n "
 	                     + "Obama was elected in 2008 and she is tall.";
 	    
 	    System.out.println("---");
