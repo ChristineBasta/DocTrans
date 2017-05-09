@@ -20,7 +20,8 @@ import cat.trachemys.generic.FileIO;
  * @since 05.05.2017
  */
 public abstract class CorefererCommons {
-	
+
+	public static final String COREF_TAG = "_c";
 	/**
 	 * Object to store the output of an annotation
 	 */
@@ -48,6 +49,27 @@ public abstract class CorefererCommons {
 		return text;
 	}
 
+	
+	/**
+	 * Adds a tag to each word in a chain. It is meant to be used as coreference
+	 * information in a NMT system
+	 * 
+	 * @param chain
+	 * @return
+	 */
+	public String addCorefTags(String chain) {		
+		String[] words = chain.split("\\s+");
+		String outputChain = "";
+		for(String word : words){
+			outputChain = outputChain +" "+ word +COREF_TAG;			
+		}
+		outputChain = outputChain.trim();
+		if (outputChain.equals(COREF_TAG))
+			outputChain = "";
+		return outputChain;
+	}
+
+	
 	/**
 	 * Includes coreference tags available in the json object into the source file
 	 * 

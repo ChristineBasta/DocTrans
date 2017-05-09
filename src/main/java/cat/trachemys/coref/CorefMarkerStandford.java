@@ -65,26 +65,28 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 	    	}
 	    	
 	    	//Customising the format of the chains
-		   	HashSet<String> mentions = new HashSet<String>();  //To avoid duplicates
+		   	HashSet<String> mentions = new HashSet<String>();  //A hash to avoid duplicates
+		   	HashSet<String> mentionsComplete = new HashSet<String>();  
 		   	for (CorefMention temp : corefChain.getMentionsInTextualOrder()) {	    		
 		   		String tempClean = temp.toString().split("\"")[1]; // doing my best to avoid regexp!
-		   		// We don't want full sentences
-		   		//if(tempClean.split("\\s+").length>3 && temp.mentionType.name() == "NOMINAL"){
-		   		if(tempClean.split("\\s+").length>3){
-		   			//System.out.println(temp.mentionType.name());
-		   			//System.out.println(tempClean);
+		   		// We store the original output just in case before preprocessing
+		   		mentionsComplete.add("<"+tempClean+">");
+		   		// Starting preprocessing. We don't want full sentences
+		   		tempClean = cleanMention(tempClean);
+		   		//System.out.println(tempClean);
+		   		if(tempClean.split("\\s+").length>3 || tempClean.equals("^\\s*$")){
 		   			continue;
 		   		}
 		   		// Non-NEs can be lowercased
 		   		if (temp.mentionType.name() == "PRONOMINAL" || temp.mentionType.name() == "NOMINAL"){
-		   			mentions.add("<"+tempClean.toString().toLowerCase()+">");
+		   			mentions.add("<"+tempClean.toLowerCase()+">");
 		   		} else {
-		   			mentions.add("<"+tempClean.toString()+">");
+		   			mentions.add("<"+tempClean+">");
 		   		}
-				//fullChain = fullChain + "<" + temp.toString().split("\"")[1] + "> ";
 			}
-		   	String fullChain = StringUtils.join(mentions, " ");
-
+	   		String completeChain = StringUtils.join(mentionsComplete, " "); //without preprocessing
+		   	String fullChain = StringUtils.join(mentions, " "); // with preprocessing
+		   	
 	    	//Extracting the info for every mention
 	    	for(CorefMention corefMention:corefChain.getMentionsInTextualOrder()){
 				JSONObject info = new JSONObject();
@@ -104,9 +106,12 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 				// Coreference chain, with and without the current word
   				//System.out.println("mention: "+corefMention.mentionSpan);
    				//System.out.println(fullChain);
-   				String restChain = fullChain.replace("<"+corefMention.mentionSpan+">","");
-      			restChain = restChain.replace("<"+corefMention.mentionSpan.toLowerCase()+">","");
+				String cleanMention = cleanMention(corefMention.mentionSpan);
+   				String restChain = fullChain.replaceAll("<\\s*"+cleanMention+">\\s*","");
+      			restChain = restChain.replaceAll("<\\s*"+cleanMention.toLowerCase()+">\\s*","");
+      			restChain = addCorefTags(restChain);
       			info.put("restChain", restChain);
+      			info.put("originalChain", completeChain);
    							
     			doc.accumulate(String.valueOf(corefMention.sentNum), info);
     		}
@@ -120,6 +125,27 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 	    
 		return cd;
 
+	}
+	
+	
+
+
+	/**
+	 * Removes undesired tokens in a mention
+	 * For English: the, 's, and leading spaces
+	 * 
+	 * @param mention
+	 * @return
+	 */
+	private String cleanMention(String mention){
+		String cleanMention;
+		// removes articles, saxon genitives and leading spaces
+   		cleanMention = mention.replaceAll("\\bThe\\b","");
+   		cleanMention = cleanMention.replaceAll("\\bthe\\b","");
+  		cleanMention = cleanMention.replaceAll("\\s*'s\\b","");
+   		cleanMention = cleanMention.trim();
+		
+		return cleanMention;		
 	}
 	
 	
