@@ -61,6 +61,12 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 	    	
 	    	//self references will not be considered 
 	    	if(corefChain.getMentionMap().entrySet().size() <= 1) {
+	    		System.out.println("map:  "+corefChain.toString());
+	    		continue;
+	    	}
+	    	// The previous one is not working?
+	    	if(corefChain.getMentionsInTextualOrder().size() == 1) {
+	    		System.out.println("mentions:  "+corefChain.toString());
 	    		continue;
 	    	}
 	    	
@@ -69,8 +75,11 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 		   	HashSet<String> mentionsComplete = new HashSet<String>();  
 		   	for (CorefMention temp : corefChain.getMentionsInTextualOrder()) {	    		
 		   		String tempClean = temp.toString().split("\"")[1]; // doing my best to avoid regexp!
+		   		
 		   		// We store the original output just in case before preprocessing
-		   		mentionsComplete.add("<"+tempClean+">");
+		   		String infoComplete = ":s"+temp.sentNum+":ts"+temp.startIndex+":te"+temp.endIndex;
+		   		mentionsComplete.add("<"+tempClean+infoComplete+">");
+		   		
 		   		// Starting preprocessing. We don't want full sentences
 		   		tempClean = cleanMention(tempClean);
 		   		//System.out.println(tempClean);
