@@ -116,6 +116,7 @@ public abstract class CorefererCommons {
 	    }
 
 	    String finalDoc = StringUtils.join(document, System.getProperty("line.separator"));
+	    finalDoc = finalDoc.concat(System.getProperty("line.separator"));
 	    try {
 			FileIO.stringToFile(new File(outputFile), finalDoc, true);
 		} catch (IOException e) {

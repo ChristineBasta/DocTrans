@@ -160,6 +160,7 @@ howbeit
 however
 hundred
 i
+i'm
 id
 ie
 if
@@ -173,6 +174,7 @@ into
 is
 isn't
 it
+it's
 itd
 it'll
 its
@@ -315,6 +317,7 @@ such
 t 
 than 
 that 
+that's
 the 
 their 
 theirs 
