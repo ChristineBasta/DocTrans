@@ -4,19 +4,13 @@
 package cat.trachemys.topic;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.json.JSONException;
-
 import cat.trachemys.generic.Check;
-import cat.trachemys.generic.FileIO;
 
 /**
  * Main class for annotating sentences in documents with topic information
@@ -28,18 +22,16 @@ public class Annotator {
 	
 	/** Language */
 	private final String lang;
-	private TopicModellerMallet topicM;
 	
 	/**
 	 * Constructor 
+	 * 
 	 * @param language
 	 */
 	public Annotator(String language, String extension){
 		Check.notNull(language);
 		Check.notNull(extension);
 		this.lang = language;
-		this.topicM = new TopicModellerMallet(extension);
-		
 	}
 	
 
