@@ -23,7 +23,11 @@ import cc.mallet.pipe.TokenSequenceRemoveStopwords;
  */
 public abstract class Commons {
 
+	// mark added to the number of topic for the translation system
 	public static final String TOPIC_TAG = "_t";
+	// file extension of the documents with every sentence tagged with the
+	// topic of the document
+	public static final String TOPIC_EXT = ".100topic";
 	
 	/**
 	 * Sequence of steps to apply as a preprocessing to the documents

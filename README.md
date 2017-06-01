@@ -59,3 +59,12 @@ usage: cat.trachemys.topic.TopicLabellerMallet
 ```
 
 ### Annotate documents with topics for translation
+
+```
+java -cp target/DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar cat.trachemys.topic.Annotator -h
+
+usage: cat.trachemys.topic.Annotator
+ -h,--help          This help
+ -i,--input <arg>   Input file with the topic information for each document
+ ```                   
+
