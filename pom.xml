@@ -42,6 +42,11 @@
     	<version>1.7.25</version>
 	</dependency>
 	<dependency>
+	    <groupId>cc.mallet</groupId>
+    	<artifactId>mallet</artifactId>
+    	<version>2.0.8</version>
+	</dependency>
+	<dependency>
 		<groupId>commons-cli</groupId>
 		<artifactId>commons-cli</artifactId>
 		<version>1.2</version>
@@ -87,13 +92,13 @@
 				</descriptorRefs>
 			</configuration>
 			<executions>
-                		<execution>
-                   			<id>make-assembly</id>
-                   			<phase>package</phase>
-                   			<goals>
-                       				<goal>single</goal>
-                    			</goals>
-                		</execution>
+                <execution>
+                  	<id>make-assembly</id>
+              		<phase>package</phase>
+           			<goals>
+                       	<goal>single</goal>
+               		</goals>
+           		</execution>
 			</executions>
 		</plugin>
 		<plugin>
@@ -101,8 +106,38 @@
 			<artifactId>maven-surefire-plugin</artifactId>
         		<version>2.19.1</version>
 		</plugin>
-		
+		<plugin>
+    		<artifactId>maven-resources-plugin</artifactId>
+    		<version>2.6</version>
+    		<executions>
+        		<execution>
+            		<id>copy-resources-mallet</id>
+            		<phase>validate</phase>
+            		<goals>
+                		<goal>copy-resources</goal>
+            		</goals>
+            		<configuration>
+                		<outputDirectory>
+                    		${basedir}/target/classes/cc/mallet/util/resources
+                		</outputDirectory>
+                		<resources>
+                    		<resource>
+                        		<directory>src/main/resources/mallet</directory>
+                        		<filtering>true</filtering>
+                    		</resource>
+                		</resources>
+            		</configuration>
+        		</execution>
+    		</executions>
+		</plugin>
 	  </plugins>
+	  
+	  <resources>
+	  	<resource>
+	  		<directory>src/main/resources</directory>	  	
+	  	</resource>	  
+	  </resources>
+	  
   </build>
 
 </project>
