@@ -22,6 +22,7 @@ import cat.trachemys.generic.FileIO;
 public abstract class CorefererCommons {
 
 	public static final String COREF_TAG = "_c";
+	public static final String HEAD_TAG = "_h";
 	/**
 	 * Object to store the output of an annotation
 	 */
@@ -105,7 +106,18 @@ public abstract class CorefererCommons {
 	            	if (!jsonChain.getBoolean("isHead") ){
 	            	    int index = jsonChain.getInt("start")-1;  //Before the mention
 	            	    // Add the chain
-	            	    tokens[index] = jsonChain.getString("restChain")+" "+tokens[index];
+	            	    
+	            	    // old representation with everything
+	            	    //tokens[index] = jsonChain.getString("restChain")+" "+tokens[index];
+	            	    
+	            	    // new representation supershortened version
+	            	    String shortenedHead = jsonChain.getString("headShortened");
+	            	    if ((shortenedHead != "-") 
+	            	    		&& (!shortenedHead.matches(String.join(" ", tokens[index])))
+	            	    		//sometimes the first word is a "the", which we have removed, let's look at the next one
+            	    		    && (!shortenedHead.matches(String.join(" ", tokens[index+1]))) ){
+	            	    	tokens[index] = "<"+shortenedHead+ HEAD_TAG +tokens[index];
+	            	    }
 	            	}
 	            }
         	    document.set(num, String.join(" ", tokens));

@@ -111,6 +111,11 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 					isHead = true;	
 				}
 				info.put("isHead", isHead);
+				CorefMention headChain = corefChain.getRepresentativeMention();
+				String head = headChain.mentionSpan;
+				info.put("head", head);
+				String shortenedHead = shortenHead(headChain);
+				info.put("headShortened", shortenedHead);
 
 				// Coreference chain, with and without the current word
   				//System.out.println("mention: "+corefMention.mentionSpan);
@@ -157,6 +162,34 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 		return cleanMention;		
 	}
 	
+
+
+	/**
+	 * Removes undesired tokens in a head similarly to other mentions,
+	 * discards a head when it is a pronoun, and discards sentences (>3 tokens)
+	 * 
+	 * @param mention
+	 * @return
+	 */
+	private String shortenHead(CorefMention mention){
+		
+		String cleanMention = "-";
+
+		if (mention.mentionType.name() == "PRONOMINAL"){
+			return cleanMention;
+		} 
+		if (mention.mentionSpan.split("\\s+").length>3 || mention.mentionSpan.equals("^\\s*$")){
+			return cleanMention;
+	   	}
+
+		// removes articles, saxon genitives and leading spaces
+   		cleanMention = mention.mentionSpan.replaceAll("\\bThe\\b","");
+   		cleanMention = cleanMention.replaceAll("\\bthe\\b","");
+  		cleanMention = cleanMention.replaceAll("\\s*'s\\b","");
+   		cleanMention = cleanMention.trim();
+		
+		return cleanMention;		
+	}
 	
 	/**
 	 * Given a CoreNLP annotation document, the method retrieves the tokenised form of the input sentences
