@@ -11,8 +11,8 @@ import java.io.*;
 
 public class MalletExample {
 	
-//	private final static String pathDocs = "/home/cristinae/pln/git/DocTrans/src/main/resources/cat/trachemys/topic";
-	private final static String pathDocs = "/home/cristinae/pln/git/DocTrans/provaDocs";
+	private final static String pathDocs = "/media/cristinae/DATA1/pln/experiments/document/corpora/NCv11_en-de";
+//	private final static String pathDocs = "/home/cristinae/pln/git/DocTrans/provaDocs";
 	private final static String stopwords = "/home/cristinae/pln/git/DocTrans/src/main/resources/cat/trachemys/topic/en.sw";
 //	private final static String stopwords = "en.sw";
 	
@@ -92,7 +92,7 @@ public class MalletExample {
 
         // Use two parallel samplers, which each look at one half the corpus and combine
         //  statistics after every iteration.
-        model.setNumThreads(2);
+        model.setNumThreads(6);
 
         // Run the model for 50 iterations and stop (this is for testing only, 
         //  for real applications, use 1000 to 2000 iterations)
