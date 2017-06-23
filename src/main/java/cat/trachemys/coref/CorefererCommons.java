@@ -116,7 +116,7 @@ public abstract class CorefererCommons {
 	            	    		&& (!shortenedHead.matches(String.join(" ", tokens[index])))
 	            	    		//sometimes the first word is a "the", which we have removed, let's look at the next one
             	    		    && (!shortenedHead.matches(String.join(" ", tokens[index+1]))) ){
-	            	    	tokens[index] = "<"+shortenedHead+ HEAD_TAG +tokens[index];
+	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
 	            	    }
 	            	}
 	            }

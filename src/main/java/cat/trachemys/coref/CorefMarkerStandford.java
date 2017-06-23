@@ -121,8 +121,8 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
   				//System.out.println("mention: "+corefMention.mentionSpan);
    				//System.out.println(fullChain);
 				String cleanMention = cleanMention(corefMention.mentionSpan);
-   				String restChain = fullChain.replaceAll("<\\s*"+cleanMention+">\\s*","");
-      			restChain = restChain.replaceAll("<\\s*"+cleanMention.toLowerCase()+">\\s*","");
+   				String restChain = fullChain.replaceAll("<\\s*\\E"+cleanMention+"\\Q>\\s*","");
+      			restChain = restChain.replaceAll("<\\s*\\E"+cleanMention.toLowerCase()+"\\Q>\\s*","");
       			restChain = addCorefTags(restChain);
       			info.put("restChain", restChain);
       			info.put("originalChain", completeChain);
@@ -291,8 +291,8 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
  
    				// Coreference chain, with and without the current word
       			info.put("chain", fullChain);
-      			String restChain = fullChain.replace("<"+corefMention.mentionSpan+"> ","");
-      			restChain = restChain.replace("<"+corefMention.mentionSpan.toLowerCase()+"> ","");
+      			String restChain = fullChain.replace("<\\E"+corefMention.mentionSpan+"\\Q> ","");
+      			restChain = restChain.replace("<\\E"+corefMention.mentionSpan.toLowerCase()+"\\Q> ","");
       			info.put("restChain", restChain);
        			/*	
        			if (!isHead){
