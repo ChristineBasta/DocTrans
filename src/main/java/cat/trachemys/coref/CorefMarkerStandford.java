@@ -121,8 +121,8 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
   				//System.out.println("mention: "+corefMention.mentionSpan);
    				//System.out.println(fullChain);
 				String cleanMention = cleanMention(corefMention.mentionSpan);
-   				String restChain = fullChain.replaceAll("<\\s*\\E"+cleanMention+"\\Q>\\s*","");
-      			restChain = restChain.replaceAll("<\\s*\\E"+cleanMention.toLowerCase()+"\\Q>\\s*","");
+   				String restChain = fullChain.replaceAll("<\\s*\\\\E"+cleanMention+"\\\\Q>\\s*","");
+      			restChain = restChain.replaceAll("<\\s*\\\\E"+cleanMention.toLowerCase()+"\\\\Q>\\s*","");
       			restChain = addCorefTags(restChain);
       			info.put("restChain", restChain);
       			info.put("originalChain", completeChain);

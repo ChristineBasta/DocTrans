@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -112,14 +113,19 @@ public abstract class CorefererCommons {
 	            	    
 	            	    // new representation supershortened version
 	            	    String shortenedHead = jsonChain.getString("headShortened");
-	            	    if ((shortenedHead != "-") 
-	            	    		&& (!shortenedHead.matches(String.join(" ", tokens[index])))
-	            	    		//sometimes the first word is a "the", which we have removed, let's look at the next one
-            	    		    && (!shortenedHead.matches(String.join(" ", tokens[index+1]))) ){
+	            	    //System.out.println("short: " + shortenedHead);
+	            	    //System.out.println("join: "+String.join(" ",tokens[index]));
+	            	    //System.out.println("join: "+String.join(" ",tokens[index+1]));
+	            	    //System.out.println("-: ");
+	            	    if (   (shortenedHead != "-") 
+	            	    	&& (!tokens[index].toLowerCase().matches(shortenedHead.toLowerCase()) )
+	            	    	//sometimes the first word is a "the", which we have removed, let's look at the next one
+            	    	    && (!tokens[index+1].toLowerCase().matches(shortenedHead.toLowerCase())) ){
 	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
 	            	    }
 	            	}
 	            }
+       	     	
         	    document.set(num, String.join(" ", tokens));
 	        } catch (JSONException e) {
 	            System.out.println("Error traversing the json object");
