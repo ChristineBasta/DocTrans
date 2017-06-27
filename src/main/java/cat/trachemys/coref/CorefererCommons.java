@@ -24,6 +24,8 @@ public abstract class CorefererCommons {
 
 	public static final String COREF_TAG = "_c";
 	public static final String HEAD_TAG = "_h";
+	public static final String COREF_BEGIN ="<b_crf>";	
+	public static final String COREF_END ="<e_crf>";	
 	/**
 	 * Object to store the output of an annotation
 	 */
@@ -122,7 +124,8 @@ public abstract class CorefererCommons {
 	            	    if (shortenedHead != "-" && !tokens[index].matches("^I$")) { 
 	            	    	if (tokens.length <= index+1){
 	            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ){
-	    	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	    	            	    	//tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	    	            	    	tokens[index] = COREF_BEGIN+" "+shortenedHead+" "+COREF_END+" "+tokens[index];
 	            	    		}	            	    	
 	            	    	} else {
 			            	    String tokensLastTwo = tokens[index]+tokens[index+1];
@@ -130,7 +133,8 @@ public abstract class CorefererCommons {
 	            	    				//articles before a name
 	            	    				&& (!tokens[index+1].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E"))
 	                    	    	    && (!tokensLastTwo.toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ) ){
-	    	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	    	            	    	//tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	    	            	    	tokens[index] = COREF_BEGIN+" "+shortenedHead+" "+COREF_END+" "+tokens[index];
 	            	    		}	            	    	
 	            	    	}
 	            	    }

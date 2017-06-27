@@ -28,7 +28,8 @@ public class TestCorefMarkerStandford {
 	private final String expectedTokSentence2 = 
 			"He is the president . She is a lawer . ";
 
-	private final String expectedJSON = "{\"1\":[{\"originalChain\":\"<his:s1:ts8:te9> "
+	// first version
+	/*private final String expectedJSON = "{\"1\":[{\"originalChain\":\"<his:s1:ts8:te9> "
 			+ "<He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\",\"restChain\":\"<his>_c <he>_c\","
 			+ "\"start\":1,\"isHead\":true,\"end\":2,\"tokens\":\"Barack Obama\","
 			+ "\"type\":\"PROPER\"},{\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> "
@@ -37,8 +38,19 @@ public class TestCorefMarkerStandford {
 			+ "\"type\":\"PRONOMINAL\"}],\"2\":{\"originalChain\":\"<his:s1:ts8:te9> "
 			+ "<He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\",\"restChain\":\"<Barack_c Obama>_c <his>_c\","
 			+ "\"start\":1,\"isHead\":false,\"end\":1,\"tokens\":\"He\",\"type\":\"PRONOMINAL\"}}";
-
-	
+    */
+	// More info added
+	private final String expectedJSON = "{\"1\":[{\"head\":\"Barack Obama\","
+			+ "\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
+		    + "\"restChain\":\"<his>_c <he>_c\",\"headShortened\":\"Barack Obama\",\"start\":1,"
+		    + "\"isHead\":true,\"end\":2,\"tokens\":\"Barack Obama\",\"type\":\"PROPER\"},"
+		    + "{\"head\":\"Barack Obama\",\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> "
+		    + "<Barack Obama:s1:ts1:te3>\",\"restChain\":\"<Barack_c Obama>_c <he>_c\","
+		    + "\"headShortened\":\"Barack Obama\",\"start\":8,\"isHead\":false,\"end\":8,"
+		    + "\"tokens\":\"his\",\"type\":\"PRONOMINAL\"}],\"2\":{\"head\":\"Barack Obama\","
+		    + "\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
+		    + "\"restChain\":\"<Barack_c Obama>_c <his>_c\",\"headShortened\":\"Barack Obama\","
+		    + "\"start\":1,\"isHead\":false,\"end\":1,\"tokens\":\"He\",\"type\":\"PRONOMINAL\"}}";
 	/**
 	 * @throws java.lang.Exception
 	 */
