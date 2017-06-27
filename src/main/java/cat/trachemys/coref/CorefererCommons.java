@@ -117,12 +117,25 @@ public abstract class CorefererCommons {
 	            	    //System.out.println("join: "+String.join(" ",tokens[index]));
 	            	    //System.out.println("join: "+String.join(" ",tokens[index+1]));
 	            	    //System.out.println("-: ");
-	            	    if (   (shortenedHead != "-") 
-	            	    	&& (!tokens[index].toLowerCase().matches(shortenedHead.toLowerCase()) )
-	            	    	//sometimes the first word is a "the", which we have removed, let's look at the next one
-            	    	    && (!tokens[index+1].toLowerCase().matches(shortenedHead.toLowerCase())) ){
-	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	            	    //System.out.println("length: "+tokens.length + " index:" +index);
+	            	    
+	            	    if (shortenedHead != "-" && !tokens[index].matches("^I$")) { 
+	            	    	if (tokens.length <= index+1){
+	            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ){
+	    	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	            	    		}	            	    	
+	            	    	} else {
+			            	    String tokensLastTwo = tokens[index]+tokens[index+1];
+	            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E")     
+	            	    				//articles before a name
+	            	    				&& (!tokens[index+1].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E"))
+	                    	    	    && (!tokensLastTwo.toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ) ){
+	    	            	    	tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	            	    		}	            	    	
+	            	    	}
 	            	    }
+	            	    //System.out.println("join: "+String.join(" ",tokens[index]));
+	            	    //System.out.println("-: ");            	    
 	            	}
 	            }
        	     	
