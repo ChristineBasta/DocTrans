@@ -27,7 +27,7 @@ public abstract class Commons {
 	public static final String TOPIC_TAG = "_t";
 	// file extension of the documents with every sentence tagged with the
 	// topic of the document
-	public static final String TOPIC_EXT = ".100topic";
+	public static final String TOPIC_EXT = ".7topic";
 	
 	/**
 	 * Sequence of steps to apply as a preprocessing to the documents
@@ -41,6 +41,7 @@ public abstract class Commons {
         
         // Get file from resources folder
     	ClassLoader classLoader = Commons.class.getClassLoader();
+    	//System.out.println(language+".sw");
     	File stopwords = new File(classLoader.getResource(language+".sw").getFile());
 
         // Pipes: lowercase, tokenize, remove stopwords, map to features
