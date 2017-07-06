@@ -49,6 +49,7 @@ public abstract class Commons {
         pipeList.add( new CharSequenceLowercase());
         // This tokeniser is not a tokeniser...
         pipeList.add( new CharSequenceReplace(Pattern.compile("'s"),""));
+        pipeList.add( new CharSequenceReplace(Pattern.compile("'")," ' "));
         //pipeList.add( new SimpleTokenizer(SimpleTokenizer.USE_DEFAULT_ENGLISH_STOPLIST) );
         pipeList.add( new CharSequence2TokenSequence(Pattern.compile("\\p{L}[\\p{L}\\p{P}]+\\p{L}")) );
         pipeList.add( new TokenSequenceRemoveStopwords(stopwords, "UTF-8", false, false, false) );

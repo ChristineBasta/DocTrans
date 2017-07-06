@@ -172,6 +172,13 @@ public class TopicLearnerMallet extends Commons{
 			formatter.printHelp(Annotator.class.getSimpleName(),options );
 			System.exit(1);
 		}		
+		
+		if ( !(cLine.hasOption("i")) ) {
+			System.out.println("Please, specify the folder where documents are\n");
+			formatter.printHelp(Annotator.class.getSimpleName(),options );
+			System.exit(1);
+		}		
+
 
 		return cLine;		
 	}

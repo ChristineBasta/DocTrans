@@ -21,6 +21,7 @@ import org.apache.commons.cli.ParseException;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.iterator.FileIterator;
 import cc.mallet.topics.PolylingualTopicModel;
+import cc.mallet.topics.TopicInferencer;
 import cc.mallet.types.InstanceList;
 
 
@@ -37,8 +38,7 @@ public class PolyTopicLearnerMallet extends Commons{
 	// TODO read from a config file and/or command line
 	private int numTopics = 100;
 	private float alpha =  0.1f; 
-	private int threads = 20; 
-	private int iters = 2000;
+	private int iters = 1500;
 	// optimisation
 	private int interval =  10;
 	private int burning =  20;
@@ -69,7 +69,7 @@ public class PolyTopicLearnerMallet extends Commons{
         }
         
         // Create a model with 100 topics, alpha_t = 0.01, beta_w = 0.01
-        modeler(instances, numTopics, alpha, burning, interval, iters, modelName);
+        modeler(instances, numTopics, alpha, burning, interval, iters, modelName, languages);
 		
 	}
 	
@@ -101,14 +101,16 @@ public class PolyTopicLearnerMallet extends Commons{
 	 * @param threads
 	 * @param iters
 	 */
-    private void modeler(InstanceList[] instances, int numTopics, float alpha, int burning, int interval, int iters, String name) {
+    private void modeler(InstanceList[] instances, int numTopics, float alpha, int burning, 
+    		int interval, int iters, String name, String[] languages) {
  
+    	int topWords = 50; // irrelevant, just for inspection
     	PolylingualTopicModel model = new PolylingualTopicModel (numTopics, alpha*numTopics);
 		
 		model.addInstances(instances);
 
 		//model.setTopicDisplay(showTopicsInterval.value, topWords.value);
-		model.setTopicDisplay(3, 15);
+		model.setTopicDisplay(5, topWords);
 		
 		
 	    // Run the model for m iterations and stop 
@@ -124,19 +126,47 @@ public class PolyTopicLearnerMallet extends Commons{
 			e.printStackTrace();
 		}
 	    
-	    //https://stackoverflow.com/questions/14141195/folding-in-estimating-topics-for-new-documents-in-lda-using-mallet-in-java    
-	    try {
-	        FileOutputStream outFile = new FileOutputStream(name);
-	        ObjectOutputStream oos = new ObjectOutputStream(outFile);
-	        oos.writeObject(model);
-	        oos.close();
-	    } catch (FileNotFoundException e) {
-	    	System.out.println("Output file for the model could not be created.");
-			e.printStackTrace();
-	    } catch (IOException e) {
-	    	System.out.println("Output file for the model could not be written.");
-			e.printStackTrace();
-	    }
+
+	    
+	    if (model != null){
+	    	// Writing the inferencer for each language
+			for (int i=0; i < languages.length; i++) {
+	    	     TopicInferencer inferencer = model.getInferencer(i);		
+	    	     try {
+	 				ObjectOutputStream oos = 
+	 					new ObjectOutputStream(new FileOutputStream(name+".inf."+languages[i]));
+	 				oos.writeObject(inferencer);
+	 				oos.close();
+
+	 			} catch (Exception e) {
+	 				System.out.println("Couldn't create inferencer.");
+	 				e.printStackTrace();
+	 			} 
+	        }
+	    
+	        // Writing the full model, just in case
+	        //https://stackoverflow.com/questions/14141195/folding-in-estimating-topics-for-new-documents-in-lda-using-mallet-in-java    
+		    try {
+		        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(name));
+		        oos.writeObject(model);
+		        oos.close();
+		    } catch (FileNotFoundException e) {
+		    	System.out.println("Output file for the model could not be created.");
+				e.printStackTrace();
+		    } catch (IOException e) {
+		    	System.out.println("Output file for the model could not be written.");
+				e.printStackTrace();
+		    }
+		    
+		    // Writing a report, just in case
+			try {
+				model.printDocumentTopics(new File (name+".report"));
+			} catch (IOException e) {
+		    	System.out.println("Output file with the report could not be written.");
+				e.printStackTrace();
+			}
+
+		}
 	    
 	}
 
@@ -181,6 +211,12 @@ public class PolyTopicLearnerMallet extends Commons{
 			formatter.printHelp(Annotator.class.getSimpleName(),options );
 			System.exit(1);
 		} 
+
+		if ( !(cLine.hasOption("i")) ) {
+			System.out.println("Please, specify the folder where documents are\n");
+			formatter.printHelp(Annotator.class.getSimpleName(),options );
+			System.exit(1);
+		}		
 
 		return cLine;		
 	}
