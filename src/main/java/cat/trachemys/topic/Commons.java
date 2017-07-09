@@ -2,6 +2,8 @@ package cat.trachemys.topic;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -41,8 +43,20 @@ public abstract class Commons {
         
         // Get file from resources folder
     	ClassLoader classLoader = Commons.class.getClassLoader();
+    	//ClassLoader classLoader = getClass().getClassLoader();
+
+    	
+    	InputStream input = Commons.class.getResourceAsStream(language+".sw");
+    	File stopwords = null;
+		try {
+			stopwords = File.createTempFile("tempfile", ".tmp");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     	//System.out.println(language+".sw");
-    	File stopwords = new File(classLoader.getResource(language+".sw").getFile());
+    	//File stopwords = new File(classLoader.getResource(language+".sw").getFile());
 
         // Pipes: lowercase, tokenize, remove stopwords, map to features
         pipeList.add( new Input2CharSequence("UTF-8"));

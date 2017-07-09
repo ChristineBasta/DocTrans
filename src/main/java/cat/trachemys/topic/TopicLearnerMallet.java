@@ -32,7 +32,7 @@ public class TopicLearnerMallet extends Commons{
 
 	// Default parameters
 	// TODO read from a config file and/or command line
-	private int numTopics = 100;
+	private int numTopics = 7;
 	private float alpha =  0.01f; 
 	private float beta =  0.01f;
 	private int threads = 20; 
@@ -94,6 +94,8 @@ public class TopicLearnerMallet extends Commons{
 	 */
     private void modeler(InstanceList instances, int numTopics, float alpha, float beta, int threads, int iters, String name) {
  
+    	int topWords = 50; // irrelevant, just for inspection
+
 	    //  Note that the first parameter is passed as the sum over topics, while
 	    //  the second is the parameter for a single dimension of the Dirichlet prior.
 	    ParallelTopicModel model = new ParallelTopicModel(numTopics, alpha*numTopics, beta);
@@ -103,6 +105,8 @@ public class TopicLearnerMallet extends Commons{
 	    //  statistics after every iteration.
 	    model.setNumThreads(threads);
 	
+		model.setTopicDisplay(5, topWords);
+
 	    // Run the model for m iterations and stop 
 	    // (for real applications, use 1000 to 2000 iterations)
 	    model.setNumIterations(iters);
