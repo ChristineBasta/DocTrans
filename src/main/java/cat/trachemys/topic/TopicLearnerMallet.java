@@ -32,7 +32,7 @@ public class TopicLearnerMallet extends Commons{
 
 	// Default parameters
 	// TODO read from a config file and/or command line
-	private int numTopics = 7;
+	private int numTopics = 100;
 	private float alpha =  0.01f; 
 	private float beta =  0.01f;
 	private int threads = 20; 

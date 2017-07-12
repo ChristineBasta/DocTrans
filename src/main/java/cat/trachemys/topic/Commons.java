@@ -2,6 +2,7 @@ package cat.trachemys.topic;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public abstract class Commons {
 	public static final String TOPIC_TAG = "_t";
 	// file extension of the documents with every sentence tagged with the
 	// topic of the document
-	public static final String TOPIC_EXT = ".7topic";
+	public static final String TOPIC_EXT = ".100topic";
 	
 	/**
 	 * Sequence of steps to apply as a preprocessing to the documents
@@ -45,15 +46,8 @@ public abstract class Commons {
     	ClassLoader classLoader = Commons.class.getClassLoader();
     	//ClassLoader classLoader = getClass().getClassLoader();
 
-    	
     	InputStream input = Commons.class.getResourceAsStream(language+".sw");
-    	File stopwords = null;
-		try {
-			stopwords = File.createTempFile("tempfile", ".tmp");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	File stopwords = getResourceAsFile(input);
 
     	//System.out.println(language+".sw");
     	//File stopwords = new File(classLoader.getResource(language+".sw").getFile());
@@ -73,6 +67,38 @@ public abstract class Commons {
     }
 
 
+    /**
+     * Loads a resource as a file given an input stream
+     * https://stackoverflow.com/questions/676097/java-resource-as-file
+     * 
+     * @param in
+     * @return
+     */
+    public static File getResourceAsFile(InputStream in) {
+        try {
+            if (in == null) {
+                return null;
+            }
+
+            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
+            tempFile.deleteOnExit();
+
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                //copy stream
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            }
+            return tempFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    
     /** File filter for the desired extension */
     class ExtFilter implements FileFilter {
 
