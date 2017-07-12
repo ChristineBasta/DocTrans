@@ -33,6 +33,8 @@ Example:
 
 ### Learning the model
 
+Monolingual
+
 ```
 java -cp target/DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar cat.trachemys.topic.TopicLearnerMallet -h
 
@@ -42,6 +44,21 @@ usage: cat.trachemys.topic.TopicLearnerMallet
  -i,--input <arg>       Input folder to annotate -one file per raw document-
  -l,--language <arg>    Language of the input text (en)
  -o,--output <arg>      File where to save model
+```
+
+Multiple languages
+
+```
+java -cp target/DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar cat.trachemys.topic.PolyTopicLearnerMallet -h
+usage: Annotator
+ -h,--help              This help
+ -i,--input <arg>       Input folder to annotate -one file per raw
+                        document and language-
+ -l,--languages <arg>   Languages of the input texts separated by commas
+                        (en,de,it,nl,ro)
+ -o,--output <arg>      File where to save model
+
+Ex: java -cp target/DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar cat.trachemys.topic.PolyTopicLearnerMallet -l en,de,it,nl,ro -i /media/cristinae/DATA1/pln/experiments/IWSLT/TED/union -o ted.union.topic100
 ```
 
 ### Assigning the topic of documents
