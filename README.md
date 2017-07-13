@@ -68,13 +68,14 @@ java -cp target/DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar cat.trachemys.to
 
 usage: cat.trachemys.topic.TopicLabellerMallet
  -e,--extension <arg>   Extension of the input documents (if different from the language)              
+ -f,--inferencer <arg>  Previously trained inferencer
  -h,--help              This help
  -i,--input <arg>       Input folder to annotate -one file per raw document-
- -l,--language <arg>    Language of the input text (en)
+ -l,--language <arg>    Language of the input text
  -m,--model <arg>       Previously trained model
  -o,--output <arg>      File where to save the statistics
 ```
-
+ 
 ### Annotate documents with topics for translation
 
 ```

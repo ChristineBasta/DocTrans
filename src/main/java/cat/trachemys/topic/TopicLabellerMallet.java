@@ -41,7 +41,7 @@ public class TopicLabellerMallet extends Commons{
    	 
 	public TopicLabellerMallet(String input, String extension, String language, TopicInferencer inferencer, String output) {
 		
-	       Inferer(input, extension,language, inferencer, output);
+	       Inferer(input, extension, language, inferencer, output);
 		    			
 	}
 
@@ -52,7 +52,7 @@ public class TopicLabellerMallet extends Commons{
 		       
 	    if (model != null){
 		    TopicInferencer inferencer = model.getInferencer();	
-		    Inferer(input, extension,language, inferencer, output);
+		    Inferer(input, extension, language, inferencer, output);
 		        		
 	    } else {
 	    	System.out.println("The model could not be loaded.");
@@ -127,7 +127,7 @@ public class TopicLabellerMallet extends Commons{
 			CommandLineParser parser = new BasicParser();
 
 			options.addOption("l", "language", true, 
-					"Language of the input text (en)");		
+					"Language of the input text");		
 			options.addOption("e", "extension", true, 
 					"Extension of the input documents (if different from the language)");		
 			options.addOption("i", "input", true, 
@@ -210,7 +210,14 @@ public class TopicLabellerMallet extends Commons{
 				TopicLabellerMallet topicL = 
 						new TopicLabellerMallet(input, extension, language, model, output);				
 			} else if(cLine.hasOption("f")){
-				String inferencer = cLine.getOptionValue("f");
+				String inferencerName = cLine.getOptionValue("f");
+				TopicInferencer inferencer = null;
+				try {
+					inferencer = TopicInferencer.read(new File (inferencerName));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				TopicLabellerMallet topicL = 
 						new TopicLabellerMallet(input, extension, language, inferencer, output);				
 				
