@@ -23,10 +23,13 @@ usage: Annotator
  -o,--txt <arg>         Save document with correferences tagged 1/0 (default: 1)
 ```
 
-Example:
+Example with Java 8:
 
 ```java -jar target/DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar -l en -i /home/cristinae/pln/git/DocTrans/provaDocs```
 
+In case you use Java 9 with Stanford, add --add-modules java.xml.bind:
+
+```java --add-modules java.xml.bind -jar DocTrans-0.1-SNAPSHOT-jar-with-dependencies.jar -l en -i /home/cristinae/pln/git/DocTrans/provaDocs```
 
 
 ## Run the topic annotation
