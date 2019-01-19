@@ -39,8 +39,8 @@ public class TestCorefMarkerStandford {
 			+ "<He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\",\"restChain\":\"<Barack_c Obama>_c <his>_c\","
 			+ "\"start\":1,\"isHead\":false,\"end\":1,\"tokens\":\"He\",\"type\":\"PRONOMINAL\"}}";
     */
-	// More info added
-	private final String expectedJSON = "{\"1\":[{\"head\":\"Barack Obama\","
+	// More info added, version 2
+	/*private final String expectedJSON = "{\"1\":[{\"head\":\"Barack Obama\","
 			+ "\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
 		    + "\"restChain\":\"<his>_c <he>_c\",\"headShortened\":\"Barack Obama\",\"start\":1,"
 		    + "\"isHead\":true,\"end\":2,\"tokens\":\"Barack Obama\",\"type\":\"PROPER\"},"
@@ -51,6 +51,28 @@ public class TestCorefMarkerStandford {
 		    + "\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
 		    + "\"restChain\":\"<Barack_c Obama>_c <his>_c\",\"headShortened\":\"Barack Obama\","
 		    + "\"start\":1,\"isHead\":false,\"end\":1,\"tokens\":\"He\",\"type\":\"PRONOMINAL\"}}";
+	*/
+	
+	// heuristics changed, version 3
+	private final String expectedJSON = "{\"1\":[{\"headGender\":\"MALE\",\"restChain\":\"<his>_c <he>_c\","
+	  		+"\"headType\":\"PROPER\",\"headShortened\":\"Barack Obama\",\"headAnim\":\"ANIMATE\","
+	  		+"\"start\":1,\"isHead\":true,\"type\":\"PROPER\",\"head\":\"Barack Obama\","
+	  		+"\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
+	  		+"\"mentionGender\":\"MALE\",\"mentionAnim\":\"ANIMATE\",\"mentionNumber\":\"SINGULAR\",\"end\":2,"
+	  		+"\"tokens\":\"Barack Obama\",\"mentionType\":\"PROPER\",\"headNumber\":\"SINGULAR\"},"
+            +"{\"headGender\":\"MALE\",\"restChain\":\"<Barack_c Obama>_c <he>_c\",\"headType\":\"PROPER\","
+            +"\"headShortened\":\"Barack Obama\",\"headAnim\":\"ANIMATE\",\"start\":8,\"isHead\":false,"
+            +"\"type\":\"PRONOMINAL\",\"head\":\"Barack Obama\","
+            +"\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
+            +"\"mentionGender\":\"MALE\",\"mentionAnim\":\"ANIMATE\",\"mentionNumber\":\"SINGULAR\","
+            +"\"end\":8,\"tokens\":\"his\",\"mentionType\":\"PRONOMINAL\",\"headNumber\":\"SINGULAR\"}],"
+	        +"\"2\":{\"headGender\":\"MALE\",\"restChain\":\"<Barack_c Obama>_c <his>_c\","
+	        +"\"headType\":\"PROPER\",\"headShortened\":\"Barack Obama\",\"headAnim\":\"ANIMATE\","
+	        +"\"start\":1,\"isHead\":false,\"type\":\"PRONOMINAL\",\"head\":\"Barack Obama\","
+	        +"\"originalChain\":\"<his:s1:ts8:te9> <He:s2:ts1:te2> <Barack Obama:s1:ts1:te3>\","
+	        +"\"mentionGender\":\"MALE\",\"mentionAnim\":\"ANIMATE\",\"mentionNumber\":\"SINGULAR\","
+	        +"\"end\":1,\"tokens\":\"He\",\"mentionType\":\"PRONOMINAL\",\"headNumber\":\"SINGULAR\"}}";
+
 	/**
 	 * @throws java.lang.Exception
 	 */
