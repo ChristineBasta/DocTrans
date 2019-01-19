@@ -4,7 +4,7 @@
 
   <groupId>cat.trachemys</groupId>
   <artifactId>DocTrans</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>DocTrans</name>
@@ -129,12 +129,15 @@
             		</configuration>
         		</execution>
     		</executions>
-		</plugin>
+		</plugin> 
 	  </plugins>
 	  
 	  <resources>
 	  	<resource>
 	  		<directory>src/main/resources</directory>	  	
+	  	</resource>	  
+	  	<resource>
+	  		<directory>src/main/resources/cat/trachemys/topic</directory>	  	
 	  	</resource>	  
 	  </resources>
 	  

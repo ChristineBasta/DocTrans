@@ -113,7 +113,15 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 				info.put("isHead", isHead);
 				CorefMention headChain = corefChain.getRepresentativeMention();
 				String head = headChain.mentionSpan;
+				String headType = headChain.mentionType.toString();
+				String headGender = headChain.gender.toString();
+				String headAnim = headChain.animacy.toString();
+				String headNumber = headChain.number.toString();
 				info.put("head", head);
+				info.put("headType", headType);
+				info.put("headGender", headGender);
+				info.put("headAnim", headAnim);
+				info.put("headNumber", headNumber);
 				String shortenedHead = shortenHead(headChain);
 				info.put("headShortened", shortenedHead);
 
@@ -121,11 +129,20 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
   				//System.out.println("mention: "+corefMention.mentionSpan);
    				//System.out.println(fullChain);
 				String cleanMention = cleanMention(corefMention.mentionSpan);
+				String mentionType = corefMention.mentionType.toString();
+				String mentionGender = corefMention.gender.toString();
+				String mentionAnim = corefMention.animacy.toString();
+				String mentionNumber = corefMention.number.toString();
+
    				String restChain = fullChain.replaceAll("<\\s*\\Q"+cleanMention+"\\E>\\s*","");
       			restChain = restChain.replaceAll("<\\s*\\Q"+cleanMention.toLowerCase()+"\\E>\\s*","");
       			restChain = addCorefTags(restChain);
       			info.put("restChain", restChain);
       			info.put("originalChain", completeChain);
+				info.put("mentionType", mentionType);
+				info.put("mentionGender", mentionGender);
+				info.put("mentionAnim", mentionAnim);
+				info.put("mentionNumber", mentionNumber);
    							
     			doc.accumulate(String.valueOf(corefMention.sentNum), info);
     		}
@@ -223,6 +240,7 @@ public class CorefMarkerStandford extends CorefererCommons implements Coreferer{
 	    
 	    System.out.println("---");
 	    System.out.println("coref chains");
+	    System.out.println("JUST PLAYING! --not the real example");
 
  	    Annotation document = new Annotation(text);
  	    // Preparing the annotators

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -26,6 +25,10 @@ public abstract class CorefererCommons {
 	public static final String HEAD_TAG = "_h";
 	public static final String COREF_BEGIN ="<b_crf>";	
 	public static final String COREF_END ="<e_crf>";	
+	public static final String NEUTRAL_TAG = "it";
+	public static final String NEUTRAL_PL_TAG = "they";
+	public static final String FEM_TAG = "she";
+	public static final String MASC_TAG = "he";
 	/**
 	 * Object to store the output of an annotation
 	 */
@@ -105,26 +108,34 @@ public abstract class CorefererCommons {
        	        String[] tokens = tempSentence.split(" ");
        	     	for (Object chains : value){
 	            	JSONObject jsonChain = (JSONObject) chains;
-	            	// We don't include the header of a chain, it can belong to different chains
+            	    int index = jsonChain.getInt("start")-1;  //Before the mention
+            	    String shortenedHead = jsonChain.getString("headShortened");
+	            	// We don't enrich the header of the chain with itself
 	            	if (!jsonChain.getBoolean("isHead") ){
-	            	    int index = jsonChain.getInt("start")-1;  //Before the mention
 	            	    // Add the chain
-	            	    
-	            	    // old representation with everything
+	            	    // Version 1: old representation with everything
 	            	    //tokens[index] = jsonChain.getString("restChain")+" "+tokens[index];
-	            	    
-	            	    // new representation supershortened version
-	            	    String shortenedHead = jsonChain.getString("headShortened");
-	            	    //System.out.println("short: " + shortenedHead);
-	            	    //System.out.println("join: "+String.join(" ",tokens[index]));
-	            	    //System.out.println("join: "+String.join(" ",tokens[index+1]));
-	            	    //System.out.println("-: ");
-	            	    //System.out.println("length: "+tokens.length + " index:" +index);
-	            	    
-	            	    if (shortenedHead != "-" && !tokens[index].matches("^I$")) { 
-	            	    	if (tokens.length <= index+1){
+            	    	//tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
+	            	    // Version2: new representation supershortened version
+                        /* if (shortenedHead != "-" && !tokens[index].matches("^I$")) { 
+    	            	if (tokens.length <= index+1){
+            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ){
+    	            	    	tokens[index] = COREF_BEGIN+" "+shortenedHead+" "+COREF_END+" "+tokens[index];
+            	    		}	            	    	
+            	    	} else {
+		            	    String tokensLastTwo = tokens[index]+tokens[index+1];
+            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E")     
+            	    				//articles before a name
+            	    				&& (!tokens[index+1].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E"))
+                    	    	    && (!tokensLastTwo.toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ) ){
+    	            	    	tokens[index] = COREF_BEGIN+" "+shortenedHead+" "+COREF_END+" "+tokens[index];
+            	    		}	            	    	
+            	    	}*/
+                        // Version 3
+	            		// For pronouns (unless "I") we enrich with the head when it is not the same word
+	            	    if (shortenedHead != "-" && !tokens[index].matches("^I$") && jsonChain.getString("mentionType").contentEquals("PRONOMINAL")) { 
+	    	            	if (tokens.length <= index+1){
 	            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ){
-	    	            	    	//tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
 	    	            	    	tokens[index] = COREF_BEGIN+" "+shortenedHead+" "+COREF_END+" "+tokens[index];
 	            	    		}	            	    	
 	            	    	} else {
@@ -133,13 +144,47 @@ public abstract class CorefererCommons {
 	            	    				//articles before a name
 	            	    				&& (!tokens[index+1].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E"))
 	                    	    	    && (!tokensLastTwo.toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ) ){
-	    	            	    	//tokens[index] = "<"+shortenedHead+">"+ HEAD_TAG +" "+tokens[index];
 	    	            	    	tokens[index] = COREF_BEGIN+" "+shortenedHead+" "+COREF_END+" "+tokens[index];
 	            	    		}	            	    	
 	            	    	}
+	    	            // For nominal structures we enrich with the gender of the head
+	            	    } else if(shortenedHead != "-" && 
+	            	      (jsonChain.getString("mentionType").contentEquals("NOMINAL") || jsonChain.getString("mentionType").contentEquals("PROPER")) 
+	            	       || jsonChain.getString("mentionType").contentEquals("PROPER")){
+	    	            	if (tokens.length <= index+1){
+	            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ){
+	   		            	        String anota = "-";
+	   		            	        anota = tagWithGender(jsonChain);
+	   		            	        if (anota != "-"){
+	   		            	        	tokens[index] = COREF_BEGIN+" "+anota+" "+COREF_END+" "+tokens[index];
+	   		            	        }	
+	            	    		}
+	    	            	}else {
+			            	    String tokensLastTwo = tokens[index]+tokens[index+1];
+	            	    		if (!tokens[index].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E")     
+	            	    				//articles before a name
+	            	    				&& (!tokens[index+1].toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E"))
+	                    	    	    && (!tokensLastTwo.toLowerCase().matches("\\Q"+shortenedHead.toLowerCase()+"\\E") ) ){
+	            	    			String anota = "-";
+	   		            	        anota = tagWithGender(jsonChain);
+	   		            	        if (anota != "-"){
+	   		            	        	tokens[index] = COREF_BEGIN+" "+anota+" "+COREF_END+" "+tokens[index];
+	   		            	        }	
+	            	    		}	            	    	
+	            	    	}
 	            	    }
+	            	    
 	            	    //System.out.println("join: "+String.join(" ",tokens[index]));
 	            	    //System.out.println("-: ");            	    
+	            	} else { // for the head
+	            	    if (shortenedHead != "-") {
+	            	    	String anota = "-";
+	            	    	anota = tagWithGender(jsonChain);
+            	    		if (anota != "-"){
+    	            	    	tokens[index] = COREF_BEGIN+" "+anota+" "+COREF_END+" "+tokens[index];
+            	    		}
+	            	    }
+	            		
 	            	}
 	            }
        	     	
@@ -159,6 +204,34 @@ public abstract class CorefererCommons {
 			e.printStackTrace();
 		}
 			
+	}
+
+
+	/**
+	 * Returns a string indicating the gender of the header when known. If it is not known, but the
+	 * subject is inanimate, we assign the neutral gender.
+	 * Tags are currently defined as: he/she/it
+	 * 
+	 * @param jsonChain
+	 * @return
+	 */
+	private String tagWithGender(JSONObject jsonChain) {
+		
+    	String anota = "-";
+    	String gender = jsonChain.getString("headGender");
+    	String animacy = jsonChain.getString("headAnim");   	
+		if(gender.equalsIgnoreCase("NEUTRAL")) {
+			if(jsonChain.getString("mentionNumber").equalsIgnoreCase("PLURAL")) anota = NEUTRAL_PL_TAG;
+			else {anota = NEUTRAL_TAG;}
+		}
+		else if(gender.equalsIgnoreCase("FEMALE")) {anota = FEM_TAG;}
+		else if(gender.equalsIgnoreCase("MALE")) {anota = MASC_TAG;}
+		else if (animacy.equalsIgnoreCase("INANIMATE")){
+			if(jsonChain.getString("mentionNumber").equalsIgnoreCase("PLURAL")) anota = NEUTRAL_PL_TAG;
+			else {anota = NEUTRAL_TAG;}
+		} 
+
+		return anota;
 	}
 
 }
